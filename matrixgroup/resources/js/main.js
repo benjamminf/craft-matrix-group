@@ -1,5 +1,11 @@
 window.MatrixGroup = {
 
+	/**
+	 *
+	 * @param object
+	 * @param property
+	 * @param callback
+	 */
 	onPropertySet: function(object, property, callback)
 	{
 		if(object.hasOwnProperty(property))
@@ -22,6 +28,13 @@ window.MatrixGroup = {
 		}
 	},
 
+	/**
+	 *
+	 * @param Patchee
+	 * @param Patcher
+	 * @param priority
+	 * @param postInit
+	 */
 	patchClass: function(Patchee, Patcher, priority, postInit)
 	{
 		var fn = Patchee.prototype
@@ -54,6 +67,13 @@ window.MatrixGroup = {
 		}
 	},
 
+	/**
+	 *
+	 * @param patchee
+	 * @param patcher
+	 * @param method
+	 * @param priority
+	 */
 	patchMethod: function(patchee, patcher, method, priority)
 	{
 		var superMethod = patchee[method]
