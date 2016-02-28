@@ -29,6 +29,31 @@
 			if(MatrixGroup.groups.hasOwnProperty(typeHandle))
 			{
 				var $blockGroup = $('<div class="matrixgroup-inner">').appendTo($block)
+				var $buttonsContainer = this.input.$addBlockBtnContainer.clone().appendTo($blockGroup)
+				var $buttonsGroup = $buttonsContainer.children('.btngroup')
+				var $buttons = $buttonsGroup.children('.btn')
+				var $addBlock = $buttonsContainer.children('.menubtn')
+
+				$buttonsContainer.removeClass('buttons last')
+				$buttonsContainer.addClass('matrixgroup-buttons')
+
+				this.addListener($buttons, 'click', function(e)
+				{
+					var type = $(e.target).data('type');
+
+					console.log(type)
+				});
+
+				new Garnish.MenuBtn($addBlock,
+				{
+					onOptionSelect: function(option)
+					{
+						var type = $(option).data('type');
+
+						console.log(type)
+
+					}.bind(this)
+				});
 
 				$block.addClass('matrixgroup')
 			}
