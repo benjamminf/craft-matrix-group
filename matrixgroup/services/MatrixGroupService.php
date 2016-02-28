@@ -39,7 +39,8 @@ class MatrixGroupService extends BaseApplicationComponent
 			throw new Exception(Craft::t('No matrix block type exists with the ID “{id}”.', array('id' => $model->typeId)));
 		}
 
-		$record->typeId = $model->typeId;
+		$record->typeId = $blockType->id;
+		$record->typeHandle = $blockType->handle;
 
 		$record->validate();
 		$model->addErrors($record->getErrors());
@@ -95,6 +96,10 @@ class MatrixGroupService extends BaseApplicationComponent
 			{
 				$condition['typeId'] = $model->typeId;
 			}
+			else if($model->typeHandle)
+			{
+				$condition['typeHandle'] = $model->typeHandle;
+			}
 			else
 			{
 				return false;
@@ -126,8 +131,9 @@ class MatrixGroupService extends BaseApplicationComponent
 	public function getBlockTypes()
 	{
 		$result = MatrixGroup_BlockTypeRecord::model()->findAll(null, array(
-			'id' => null,
-			'typeId' => null,
+			'id'         => null,
+			'typeId'     => null,
+			'typeHandle' => null,
 		));
 
 		return MatrixGroup_BlockTypeModel::populateModels($result);

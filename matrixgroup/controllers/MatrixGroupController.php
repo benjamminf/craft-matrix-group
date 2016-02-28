@@ -52,6 +52,7 @@ class MatrixGroupController extends BaseController
 						{
 							$groupBlockType = new MatrixGroup_BlockTypeModel();
 							$groupBlockType->typeId = (int) $blockType->id;
+							$groupBlockType->typeHandle = $blockType->handle;
 
 							if($group)
 							{
