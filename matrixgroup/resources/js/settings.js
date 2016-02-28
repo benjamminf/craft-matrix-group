@@ -1,121 +1,110 @@
 (function($)
 {
-	/**
-	 *
-	 * @param configurator
-	 * @constructor
-	 */
-	function Settings(configurator)
-	{
-		this.configurator = configurator
+	var Settings = Garnish.Base.extend({
 
-		MatrixGroup.patchMethod(configurator, this, 'addBlockType')
-		MatrixGroup.patchMethod(configurator, this, 'getBlockTypeSettingsModal')
-	}
-
-	/**
-	 *
-	 * @param args
-	 */
-	Settings.prototype.postInit = function(args)
-	{
-		var configurator = this.configurator
-		var blockTypes = configurator.blockTypes
-
-		for(var id in blockTypes) if(blockTypes.hasOwnProperty(id))
+		/**
+		 *
+		 * @param configurator
+		 * @constructor
+		 */
+		init: function(configurator)
 		{
-			var blockType = blockTypes[id]
+			this.configurator = configurator
 
-			this.initBlockType(blockType)
-			this.setBlockTypeGroup(blockType, MatrixGroup.groups.hasOwnProperty(id))
+			MatrixGroup.patchMethod(configurator, this, 'addBlockType')
+			MatrixGroup.patchMethod(configurator, this, 'getBlockTypeSettingsModal')
+		},
+
+		postInit: function(args)
+		{
+			var configurator = this.configurator
+			var blockTypes = configurator.blockTypes
+
+			for(var id in blockTypes) if(blockTypes.hasOwnProperty(id))
+			{
+				var blockType = blockTypes[id]
+
+				this.initBlockType(blockType)
+				this.setBlockTypeGroup(blockType, MatrixGroup.groups.hasOwnProperty(id))
+			}
+		},
+
+		initBlockType: function(blockType)
+		{
+			var configurator = this.configurator
+			var inputName = 'types[Matrix][blockTypes][' + blockType.id + '][group]'
+
+			blockType.$groupHiddenInput = $('<input type="hidden" name="' + inputName + '" value="1">')
+
+			MatrixGroup.patchMethod(blockType, {applySettings: function()
+			{
+				this.setBlockTypeGroup(blockType)
+
+			}.bind(this)}, 'applySettings')
+
+			this.addListener(blockType.$settingsBtn, 'click', function()
+			{
+				var modal = configurator.getBlockTypeSettingsModal()
+				var isGroup = blockType.$groupHiddenInput.parent().length > 0
+
+				modal.$groupInput.prop('checked', isGroup)
+			});
+		},
+
+		setBlockTypeGroup: function(blockType, isGroup)
+		{
+			var configurator = this.configurator
+			var modal = configurator.getBlockTypeSettingsModal()
+
+			isGroup = typeof isGroup === 'boolean' ? isGroup : modal.$groupInput.is(':checked')
+
+			if(isGroup)
+			{
+				blockType.$groupHiddenInput.appendTo(blockType.$item)
+			}
+			else
+			{
+				blockType.$groupHiddenInput.remove()
+			}
+
+			blockType.$item.toggleClass('matrixgroup', isGroup)
+		},
+
+		addBlockType: function(args, output)
+		{
+			var configurator = this.configurator
+			var modal = configurator.getBlockTypeSettingsModal()
+
+			modal.$groupInput.prop('checked', false)
+
+			MatrixGroup.patchMethod(modal, {onSubmit: function()
+			{
+				var id = 'new' + configurator.totalNewBlockTypes
+				var blockType = configurator.blockTypes[id]
+
+				this.initBlockType(blockType)
+				this.setBlockTypeGroup(blockType)
+
+			}.bind(this)}, 'onSubmit')
+
+			return output
+		},
+
+		getBlockTypeSettingsModal: function(args, output)
+		{
+			var configurator = this.configurator
+			var modal = configurator.blockTypeSettingsModal
+
+			if(!modal.$groupField)
+			{
+				modal.$groupField = $('<div class="field checkboxfield">').insertAfter(modal.$handleField)
+				modal.$groupInput = $('<input type="checkbox" value="1" id="new-block-type-group" class="checkbox">').appendTo(modal.$groupField)
+				modal.$groupLabel = $('<label for="new-block-type-group">' + Craft.t('This is a group block type') + '</label>').appendTo(modal.$groupField)
+			}
+
+			return output
 		}
-	}
-
-	/**
-	 *
-	 * @param blockType
-	 */
-	Settings.prototype.initBlockType = function(blockType)
-	{
-		var inputName = 'types[Matrix][blockTypes][' + blockType.id + '][group]'
-
-		blockType.$groupHiddenInput = $('<input type="hidden" name="' + inputName + '" value="1">')
-
-		MatrixGroup.patchMethod(blockType, {applySettings: function()
-		{
-			this.setBlockTypeGroup(blockType)
-
-		}.bind(this)}, 'applySettings')
-	}
-
-	/**
-	 *
-	 * @param blockType
-	 * @param isGroup
-	 */
-	Settings.prototype.setBlockTypeGroup = function(blockType, isGroup)
-	{
-		var configurator = this.configurator
-		var modal = configurator.blockTypeSettingsModal
-
-		isGroup = typeof isGroup === 'boolean' ? isGroup : modal.$groupInput.is(':checked')
-
-		if(isGroup)
-		{
-			blockType.$groupHiddenInput.appendTo(blockType.$item)
-		}
-		else
-		{
-			blockType.$groupHiddenInput.remove()
-		}
-
-		blockType.$item.toggleClass('matrixgroup', isGroup)
-	}
-
-	/**
-	 *
-	 * @param args
-	 * @param output
-	 * @returns {*}
-	 */
-	Settings.prototype.addBlockType = function(args, output)
-	{
-		var configurator = this.configurator
-		var modal = configurator.blockTypeSettingsModal
-
-		MatrixGroup.patchMethod(modal, {onSubmit: function()
-		{
-			var id = 'new' + configurator.totalNewBlockTypes
-			var blockType = configurator.blockTypes[id]
-
-			this.initBlockType(blockType)
-			this.setBlockTypeGroup(blockType)
-
-		}.bind(this)}, 'onSubmit')
-
-		return output
-	}
-
-	/**
-	 *
-	 * @param args
-	 * @param output
-	 * @returns {*}
-	 */
-	Settings.prototype.getBlockTypeSettingsModal = function(args, output)
-	{
-		var configurator = this.configurator
-		var modal = configurator.blockTypeSettingsModal
-
-		if(!modal.$groupField)
-		{
-			modal.$groupField = $('<div class="field checkboxfield">').insertAfter(modal.$handleField)
-			modal.$groupInput = $('<input type="checkbox" value="1" id="new-block-type-group" class="checkbox">').appendTo(modal.$groupField)
-			modal.$groupLabel = $('<label for="new-block-type-group">' + Craft.t('This is a group block type') + '</label>').appendTo(modal.$groupField)
-		}
-
-		return output
-	}
+	});
 
 	MatrixGroup.onPropertySet(Craft, 'MatrixConfigurator', function()
 	{
