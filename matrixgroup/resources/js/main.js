@@ -22,25 +22,35 @@ window.MatrixGroup = {
 		}
 	},
 
-	patchClass: function(Patchee, Patcher, priority)
+	patchClass: function(Patchee, Patcher, priority, postInit)
 	{
 		var fn = Patchee.prototype
 		var init = fn.init
 
+		if(typeof postInit === 'string')
+		{
+			postInit = Patcher.prototype[postInit]
+		}
+
+		postInit = postInit || function(){}
+
 		fn.init = function()
 		{
 			var args = Array.prototype.slice.call(arguments)
+			var patcher
 
 			if(priority)
 			{
-				new Patcher(this, args)
+				patcher = new Patcher(this, args)
 				init.apply(this, args)
 			}
 			else
 			{
 				init.apply(this, args)
-				new Patcher(this, args)
+				patcher = new Patcher(this, args)
 			}
+
+			postInit.call(patcher, args)
 		}
 	},
 
