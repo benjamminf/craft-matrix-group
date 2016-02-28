@@ -18,8 +18,21 @@
 			var id = 'new' + configurator.totalNewBlockTypes
 			var blockType = configurator.blockTypes[id]
 			var isGroup = modal.$groupInput.is(':checked')
+			var inputName = 'types[Matrix][blockTypes][' + id + '][group]'
 
+			blockType.$groupHiddenInput = $('<input type="hidden" name="' + inputName + '">').appendTo(blockType.$item)
+
+			blockType.$groupHiddenInput.val(isGroup)
 			blockType.$item.toggleClass('matrixgroup', isGroup)
+
+			MatrixGroup.patchMethod(blockType, {applySettings: function()
+			{
+				var isGroup = modal.$groupInput.is(':checked')
+
+				blockType.$groupHiddenInput.val(isGroup)
+				blockType.$item.toggleClass('matrixgroup', isGroup)
+
+			}}, 'applySettings')
 
 		}}, 'onSubmit')
 
