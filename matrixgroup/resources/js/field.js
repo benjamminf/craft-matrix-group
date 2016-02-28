@@ -42,7 +42,7 @@
 					var type = $(e.target).data('type');
 
 					console.log(type)
-				});
+				})
 
 				new Garnish.MenuBtn($addBlock,
 				{
@@ -53,7 +53,7 @@
 						console.log(type)
 
 					}.bind(this)
-				});
+				})
 
 				$block.addClass('matrixgroup')
 			}
