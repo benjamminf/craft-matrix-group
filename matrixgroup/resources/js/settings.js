@@ -15,6 +15,10 @@
 			MatrixGroup.patchMethod(configurator, this, 'getBlockTypeSettingsModal')
 		},
 
+		/**
+		 *
+		 * @param args
+		 */
 		postInit: function(args)
 		{
 			var configurator = this.configurator
@@ -29,6 +33,10 @@
 			}
 		},
 
+		/**
+		 *
+		 * @param blockType
+		 */
 		initBlockType: function(blockType)
 		{
 			var configurator = this.configurator
@@ -51,6 +59,11 @@
 			});
 		},
 
+		/**
+		 *
+		 * @param blockType
+		 * @param isGroup
+		 */
 		setBlockTypeGroup: function(blockType, isGroup)
 		{
 			var configurator = this.configurator
@@ -70,6 +83,12 @@
 			blockType.$item.toggleClass('matrixgroup', isGroup)
 		},
 
+		/**
+		 *
+		 * @param args
+		 * @param output
+		 * @returns {*}
+		 */
 		addBlockType: function(args, output)
 		{
 			var configurator = this.configurator
@@ -90,6 +109,12 @@
 			return output
 		},
 
+		/**
+		 *
+		 * @param args
+		 * @param output
+		 * @returns {*}
+		 */
 		getBlockTypeSettingsModal: function(args, output)
 		{
 			var configurator = this.configurator
