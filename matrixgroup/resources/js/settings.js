@@ -4,7 +4,26 @@
 	{
 		this.configurator = configurator
 
+		MatrixGroup.patchMethod(configurator, this, 'addBlockType')
 		MatrixGroup.patchMethod(configurator, this, 'getBlockTypeSettingsModal')
+	}
+
+	Settings.prototype.addBlockType = function(args, output)
+	{
+		var configurator = this.configurator
+		var modal = configurator.blockTypeSettingsModal
+
+		MatrixGroup.patchMethod(modal, {onSubmit: function()
+		{
+			var id = 'new' + configurator.totalNewBlockTypes
+			var blockType = configurator.blockTypes[id]
+			var isGroup = modal.$groupInput.is(':checked')
+
+			blockType.$item.toggleClass('matrixgroup', isGroup)
+
+		}}, 'onSubmit')
+
+		return output
 	}
 
 	Settings.prototype.getBlockTypeSettingsModal = function(args, output)
@@ -25,7 +44,7 @@
 	MatrixGroup.onPropertySet(Craft, 'MatrixConfigurator', function()
 	{
 		MatrixGroup.Settings = Settings
-		MatrixGroup.patchClass(Craft.MatrixConfigurator, MatrixGroup.Settings)
+		MatrixGroup.patchClass(Craft.MatrixConfigurator, MatrixGroup.Settings, true)
 	})
 
 })(jQuery)

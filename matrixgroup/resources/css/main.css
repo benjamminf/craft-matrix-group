@@ -1,0 +1,4 @@
+.matrixconfigitem.matrixgroup > .handle::after {
+	content: ' group';
+	color: #0d78f2;
+}

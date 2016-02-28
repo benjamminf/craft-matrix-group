@@ -22,15 +22,25 @@ window.MatrixGroup = {
 		}
 	},
 
-	patchClass: function(Patchee, Patcher)
+	patchClass: function(Patchee, Patcher, priority)
 	{
 		var fn = Patchee.prototype
 		var init = fn.init
 
 		fn.init = function()
 		{
-			init.apply(this, arguments)
-			new Patcher(this)
+			var args = Array.prototype.slice.call(arguments)
+
+			if(priority)
+			{
+				new Patcher(this, args)
+				init.apply(this, args)
+			}
+			else
+			{
+				init.apply(this, args)
+				new Patcher(this, args)
+			}
 		}
 	},
 
