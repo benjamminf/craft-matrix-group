@@ -114,4 +114,14 @@
 		MatrixGroup.patchClass(Craft.MatrixConfigurator, Settings, true, 'postInit')
 	})
 
+	$('input[name="action"]').each(function()
+	{
+		var $this = $(this)
+
+		if($this.val() === 'fields/saveField')
+		{
+			$this.val('matrixGroup/saveField')
+		}
+	})
+
 })(jQuery)
