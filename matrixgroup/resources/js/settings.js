@@ -129,7 +129,7 @@
 
 			return output
 		}
-	});
+	})
 
 	MatrixGroup.onPropertySet(Craft, 'MatrixConfigurator', function()
 	{
