@@ -65,7 +65,21 @@ class MatrixGroupPlugin extends BasePlugin
 		{
 			craft()->templates->includeCssResource('matrixgroup/css/main.css');
 			craft()->templates->includeJsResource('matrixgroup/js/main.js');
+			craft()->templates->includeJs('MatrixGroup.groups=' . json_encode($this->_getGroupBlockTypes()));
 			craft()->templates->includeJsResource('matrixgroup/js/settings.js');
 		}
+	}
+
+	private function _getGroupBlockTypes()
+	{
+		$return = array();
+		$groups = craft()->matrixGroup->getBlockTypes();
+
+		foreach($groups as $group)
+		{
+			$return[$group->typeId] = $group->id;
+		}
+
+		return $return;
 	}
 }

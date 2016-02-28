@@ -27,6 +27,7 @@
 			var blockType = blockTypes[id]
 
 			this.initBlockType(blockType)
+			this.setBlockTypeGroup(blockType, MatrixGroup.groups.hasOwnProperty(id))
 		}
 	}
 
@@ -38,7 +39,7 @@
 	{
 		var inputName = 'types[Matrix][blockTypes][' + blockType.id + '][group]'
 
-		blockType.$groupHiddenInput = $('<input type="hidden" name="' + inputName + '">').appendTo(blockType.$item)
+		blockType.$groupHiddenInput = $('<input type="hidden" name="' + inputName + '" value="1">')
 
 		MatrixGroup.patchMethod(blockType, {applySettings: function()
 		{
@@ -59,7 +60,15 @@
 
 		isGroup = typeof isGroup === 'boolean' ? isGroup : modal.$groupInput.is(':checked')
 
-		blockType.$groupHiddenInput.val(isGroup)
+		if(isGroup)
+		{
+			blockType.$groupHiddenInput.appendTo(blockType.$item)
+		}
+		else
+		{
+			blockType.$groupHiddenInput.remove()
+		}
+
 		blockType.$item.toggleClass('matrixgroup', isGroup)
 	}
 

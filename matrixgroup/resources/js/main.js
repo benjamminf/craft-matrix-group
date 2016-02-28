@@ -1,5 +1,8 @@
 window.MatrixGroup = {
 
+	// Will be populated in the MatrixGroupPlugin.php file
+	groups: {},
+
 	/**
 	 *
 	 * @param object

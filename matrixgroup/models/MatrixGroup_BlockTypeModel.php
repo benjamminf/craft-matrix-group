@@ -8,7 +8,6 @@ class MatrixGroup_BlockTypeModel extends BaseModel
 		return array(
 			'id'     => AttributeType::Number,
 			'typeId' => AttributeType::Number,
-			'group'  => AttributeType::Bool,
 		);
 	}
 }

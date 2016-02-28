@@ -43,7 +43,7 @@ class MatrixGroupController extends BaseController
 
 				foreach($postSettings['blockTypes'] as $postId => $postBlockType)
 				{
-					$group = $postBlockType['group'] === 'true';
+					$group = array_key_exists('group', $postBlockType);
 					$handle = $postBlockType['handle'];
 
 					foreach($blockTypes as $id => $blockType)
@@ -52,7 +52,6 @@ class MatrixGroupController extends BaseController
 						{
 							$groupBlockType = new MatrixGroup_BlockTypeModel();
 							$groupBlockType->typeId = (int) $blockType->id;
-							$groupBlockType->group = $group;
 
 							if($group)
 							{

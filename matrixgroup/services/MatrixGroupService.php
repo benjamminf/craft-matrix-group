@@ -3,6 +3,12 @@ namespace Craft;
 
 class MatrixGroupService extends BaseApplicationComponent
 {
+	/**
+	 * @param MatrixGroup_BlockTypeModel $model
+	 * @return bool
+	 * @throws Exception
+	 * @throws \Exception
+	 */
 	public function saveBlockType(MatrixGroup_BlockTypeModel $model)
 	{
 		$record = null;
@@ -34,7 +40,6 @@ class MatrixGroupService extends BaseApplicationComponent
 		}
 
 		$record->typeId = $model->typeId;
-		$record->group = $model->group;
 
 		$record->validate();
 		$model->addErrors($record->getErrors());
@@ -70,6 +75,11 @@ class MatrixGroupService extends BaseApplicationComponent
 		return $success;
 	}
 
+	/**
+	 * @param MatrixGroup_BlockTypeModel $model
+	 * @return bool
+	 * @throws \Exception
+	 */
 	public function deleteBlockType(MatrixGroup_BlockTypeModel $model)
 	{
 		$transaction = craft()->db->getCurrentTransaction() === null ? craft()->db->beginTransaction() : null;
@@ -108,5 +118,18 @@ class MatrixGroupService extends BaseApplicationComponent
 
 			throw $e;
 		}
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getBlockTypes()
+	{
+		$result = MatrixGroup_BlockTypeRecord::model()->findAll(null, array(
+			'id' => null,
+			'typeId' => null,
+		));
+
+		return MatrixGroup_BlockTypeModel::populateModels($result);
 	}
 }
