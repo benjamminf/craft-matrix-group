@@ -23,13 +23,16 @@
 
 		setupBlock: function($block)
 		{
+			var input = this.input
 			var $type = $block.children('input[name$="[type]"]')
 			var typeHandle = $type.val()
 
 			if(MatrixGroup.groups.hasOwnProperty(typeHandle))
 			{
 				var $blockGroup = $('<div class="matrixgroup-inner">').appendTo($block)
-				var $buttonsContainer = this.input.$addBlockBtnContainer.clone().appendTo($blockGroup)
+				var $blocksContainer = $('<div class="matrixgroup-blocks">').appendTo($blockGroup)
+				var $blocksDummy = $('<div>').appendTo($blocksContainer)
+				var $buttonsContainer = input.$addBlockBtnContainer.clone().appendTo($blockGroup)
 				var $buttonsGroup = $buttonsContainer.children('.btngroup')
 				var $buttons = $buttonsGroup.children('.btn')
 				var $addBlock = $buttonsContainer.children('.menubtn')
@@ -41,7 +44,7 @@
 				{
 					var type = $(e.target).data('type');
 
-					console.log(type)
+					input.addBlock(type, $blocksDummy)
 				})
 
 				new Garnish.MenuBtn($addBlock,
@@ -50,7 +53,7 @@
 					{
 						var type = $(option).data('type');
 
-						console.log(type)
+						input.addBlock(type, $blocksDummy)
 
 					}.bind(this)
 				})
