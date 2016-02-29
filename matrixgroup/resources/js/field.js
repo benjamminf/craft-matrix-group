@@ -33,7 +33,7 @@
 			{
 				var $blockGroup = $('<div class="matrixgroup-inner">').appendTo($block)
 				var $blocksContainer = $('<div class="matrixgroup-blocks">').appendTo($blockGroup)
-				var $blocksDummy = $('<div>').appendTo($blocksContainer)
+				var $blocksAnchor = $('<div>').appendTo($blocksContainer)
 				var $buttonsContainer = input.$addBlockBtnContainer.clone().appendTo($blockGroup)
 				var $buttonsGroup = $buttonsContainer.children('.btngroup')
 				var $buttons = $buttonsGroup.children('.btn')
@@ -46,7 +46,7 @@
 				{
 					var type = $(e.target).data('type');
 
-					input.addBlock(type, $blocksDummy)
+					input.addBlock(type, $blocksAnchor)
 				})
 
 				new Garnish.MenuBtn($addBlock,
@@ -55,7 +55,7 @@
 					{
 						var type = $(option).data('type')
 
-						input.addBlock(type, $blocksDummy)
+						input.addBlock(type, $blocksAnchor)
 
 					}.bind(this)
 				})
