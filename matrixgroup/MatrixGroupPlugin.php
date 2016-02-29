@@ -56,6 +56,7 @@ class MatrixGroupPlugin extends BasePlugin
 		if(craft()->request->isCpRequest() && $this->isCraftRequiredVersion())
 		{
 			$this->includeResources();
+			$this->bindEvents();
 		}
 	}
 
@@ -69,6 +70,29 @@ class MatrixGroupPlugin extends BasePlugin
 			craft()->templates->includeJsResource('matrixgroup/js/settings.js');
 			craft()->templates->includeJsResource('matrixgroup/js/field.js');
 		}
+	}
+
+	protected function bindEvents()
+	{
+		// TODO Save matrix group markers here instead of controller
+		craft()->on('elements.saveElement', function(Event $e)
+		{
+			$element = $e->params['element'];
+			$isNewElement = $e->params['isNewElement'];
+
+			if($element->elementType == ElementType::MatrixBlock)
+			{
+				$block = $element;
+				$owner = $block->getOwner();
+
+				//$postName = "fields[$owner->][][parent]";
+
+				//echo '<pre>';
+				//var_dump($element);
+				//echo '</pre>';
+				//exit;
+			}
+		});
 	}
 
 	private function _getGroupBlockTypes()
