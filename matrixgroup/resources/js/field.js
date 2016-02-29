@@ -69,8 +69,21 @@
 			var input = this.input
 			var id = 'new' + input.totalNewBlocks
 			var $block = input.$blockContainer.find('.matrixblock[data-id="' + id + '"]')
+			var animateInfo = $.data($block[0], 'velocity')
+
+			$block.velocity('stop')
 
 			this.setupBlock($block)
+
+			$block.css({
+				'opacity': 0,
+				'margin-bottom': -$block.outerHeight()
+			})
+
+			$block.velocity({
+				opacity: 1,
+				'margin-bottom': 10
+			}, animateInfo.opts.duration, animateInfo.opts.complete)
 
 			return output
 		}
