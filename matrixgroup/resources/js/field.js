@@ -26,8 +26,19 @@
 		setupBlock: function($block)
 		{
 			var input = this.input
+			var id = $block.data('id')
 			var $type = $block.children('input[name$="[type]"]')
 			var typeHandle = $type.val()
+			var $blockNested = $block.parent('.matrixgroup-blocks')
+
+			if($blockNested.length > 0)
+			{
+				var $parentBlock = $blockNested.closest('.matrixblock')
+				var parentId = $parentBlock.data('id')
+				var parentInputName = input.inputNamePrefix + '[' + id + '][parent]'
+
+				$('<input type="hidden" name="' + parentInputName + '" value="' + parentId + '">').appendTo($block)
+			}
 
 			if(MatrixGroup.groups.hasOwnProperty(typeHandle))
 			{
