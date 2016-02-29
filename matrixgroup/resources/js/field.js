@@ -5,6 +5,8 @@
 		init: function(input)
 		{
 			this.input = input
+
+			MatrixGroup.patchMethod(input, this, 'addBlock')
 		},
 
 		postInit: function(args)
@@ -51,7 +53,7 @@
 				{
 					onOptionSelect: function(option)
 					{
-						var type = $(option).data('type');
+						var type = $(option).data('type')
 
 						input.addBlock(type, $blocksDummy)
 
@@ -60,6 +62,17 @@
 
 				$block.addClass('matrixgroup')
 			}
+		},
+
+		addBlock: function(args, output)
+		{
+			var input = this.input
+			var id = 'new' + input.totalNewBlocks
+			var $block = input.$blockContainer.find('.matrixblock[data-id="' + id + '"]')
+
+			this.setupBlock($block)
+
+			return output
 		}
 	})
 
