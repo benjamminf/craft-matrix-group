@@ -74,8 +74,10 @@ class MatrixGroupPlugin extends BasePlugin
 
 	protected function bindEvents()
 	{
+		$blockIdMap = array();
+
 		// TODO Save matrix group markers here instead of controller
-		craft()->on('elements.saveElement', function(Event $e)
+		craft()->on('elements.saveElement', function(Event $e) use($blockIdMap)
 		{
 			$element = $e->params['element'];
 			$isNewElement = $e->params['isNewElement'];
@@ -83,14 +85,50 @@ class MatrixGroupPlugin extends BasePlugin
 			if($element->elementType == ElementType::MatrixBlock)
 			{
 				$block = $element;
-				$owner = $block->getOwner();
+				$type = $block->getType();
+				$field = craft()->fields->getFieldById($type->fieldId);
 
-				//$postName = "fields[$owner->][][parent]";
+				$postBlocks = craft()->request->getPost('fields.' . $field->handle);
+				$parentBlockId = null;
 
-				//echo '<pre>';
-				//var_dump($element);
-				//echo '</pre>';
-				//exit;
+				if($isNewElement)
+				{
+					$postBlockIds = array_keys($postBlocks);
+					$postBlockId = $postBlockIds[$block->sortOrder - 1];
+
+					// Save this in case it has any children that need it's ID
+					$blockIdMap[$postBlockId] = $block->id;
+				}
+				else
+				{
+					$postBlockId = $block->id;
+				}
+
+				$postBlock = $postBlocks[$postBlockId];
+
+				if(array_key_exists('parent', $postBlock))
+				{
+					$postBlockParentId = $postBlock['parent'];
+					$isParentNew = (strncmp($postBlockParentId, 'new', 3) === 0);
+
+					if($isParentNew)
+					{
+						$parentBlockId = $blockIdMap[$postBlockParentId];
+					}
+					else
+					{
+						$parentBlockId = $postBlockParentId;
+					}
+				}
+
+				if($parentBlockId)
+				{
+					// TODO Save parent
+				}
+				else
+				{
+					// TODO Delete parent
+				}
 			}
 		});
 	}
