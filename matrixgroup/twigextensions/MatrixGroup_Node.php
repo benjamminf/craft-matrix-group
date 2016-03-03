@@ -3,34 +3,42 @@ namespace Craft;
 
 require_once 'MatrixGroup_NodeItem.php';
 
+/**
+ * Class MatrixGroup_Node
+ *
+ * @package Craft
+ */
 class MatrixGroup_Node extends \Twig_Node_For
 {
-	// Properties
-	// =========================================================================
-
 	/**
 	 * @var MatrixGroup_NodeItem
 	 */
 	protected $matrixGroupItemNode;
 
-	// Public Methods
-	// =========================================================================
-
 	/**
+	 *
 	 * @param \Twig_Node_Expression_AssignName $keyTarget
 	 * @param \Twig_Node_Expression_AssignName $valueTarget
-	 * @param \Twig_Node_Expression            $seq
-	 * @param \Twig_NodeInterface              $upperBody
-	 * @param \Twig_NodeInterface              $lowerBody
-	 * @param \Twig_NodeInterface              $indent
-	 * @param \Twig_NodeInterface              $outdent
-	 * @param null                             $lineno
-	 * @param null                             $tag
-	 *
+	 * @param \Twig_Node_Expression $seq
+	 * @param \Twig_NodeInterface $upperBody
+	 * @param \Twig_NodeInterface $lowerBody
+	 * @param \Twig_NodeInterface $indent
+	 * @param \Twig_NodeInterface $outdent
+	 * @param null $lineno
+	 * @param null $tag
 	 * @return \Craft\MatrixGroup_Node
 	 */
-	public function __construct(\Twig_Node_Expression_AssignName $keyTarget, \Twig_Node_Expression_AssignName $valueTarget, \Twig_Node_Expression $seq, \Twig_NodeInterface $upperBody, \Twig_NodeInterface $lowerBody = null, \Twig_NodeInterface $indent = null, \Twig_NodeInterface $outdent = null, $lineno, $tag = null)
-	{
+	public function __construct(
+		\Twig_Node_Expression_AssignName $keyTarget,
+		\Twig_Node_Expression_AssignName $valueTarget,
+		\Twig_Node_Expression $seq,
+		\Twig_NodeInterface $upperBody,
+		\Twig_NodeInterface $lowerBody = null,
+		\Twig_NodeInterface $indent = null,
+		\Twig_NodeInterface $outdent = null,
+		$lineno,
+		$tag = null
+	) {
 		$this->matrixGroupItemNode = new MatrixGroup_NodeItem($valueTarget, $indent, $outdent, $lowerBody, $lineno, $tag);
 		$body = new \Twig_Node(array($this->matrixGroupItemNode, $upperBody));
 
@@ -41,7 +49,6 @@ class MatrixGroup_Node extends \Twig_Node_For
 	 * Compiles the node to PHP.
 	 *
 	 * @param \Twig_Compiler $compiler
-	 *
 	 * @return null
 	 */
 	public function compile(\Twig_Compiler $compiler)
@@ -95,7 +102,6 @@ class MatrixGroup_Node extends \Twig_Node_For
 				->write("\$context['matrixGroup'] = \$_matrixGroup;\n")
 				->write("unset(\$_matrixGroup);\n")
 			->outdent()
-			->write("}\n")
-		;
+			->write("}\n");
 	}
 }

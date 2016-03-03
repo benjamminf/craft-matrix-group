@@ -3,6 +3,11 @@ namespace Craft;
 
 require_once 'MatrixGroup_TokenParser.php';
 
+/**
+ * Class MatrixGroupTwigExtension
+ *
+ * @package Craft
+ */
 class MatrixGroupTwigExtension extends \Twig_Extension
 {
 	public function getName()

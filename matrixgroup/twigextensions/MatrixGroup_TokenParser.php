@@ -4,20 +4,12 @@ namespace Craft;
 require_once 'MatrixGroup_Node.php';
 
 /**
- * Recursively outputs a hierarchical navigation.
+ * Class MatrixGroup_TokenParser
  *
- * @author    Pixel & Tonic, Inc. <support@pixelandtonic.com>
- * @copyright Copyright (c) 2014, Pixel & Tonic, Inc.
- * @license   http://craftcms.com/license Craft License Agreement
- * @see       http://craftcms.com
- * @package   craft.app.etc.templating.twigextensions
- * @since     1.2
+ * @package Craft
  */
 class MatrixGroup_TokenParser extends \Twig_TokenParser
 {
-	// Public Methods
-	// =========================================================================
-
 	/**
 	 * Gets the tag name associated with this token parser.
 	 *
@@ -32,7 +24,6 @@ class MatrixGroup_TokenParser extends \Twig_TokenParser
 	 * Parses a token and returns a node.
 	 *
 	 * @param \Twig_Token $token
-	 *
 	 * @return \Twig_NodeInterface
 	 */
 	public function parse(\Twig_Token $token)
@@ -88,7 +79,6 @@ class MatrixGroup_TokenParser extends \Twig_TokenParser
 
 	/**
 	 * @param \Twig_Token $token
-	 *
 	 * @return bool
 	 */
 	public function decideMatrixGroupFork(\Twig_Token $token)
@@ -98,7 +88,6 @@ class MatrixGroup_TokenParser extends \Twig_TokenParser
 
 	/**
 	 * @param \Twig_Token $token
-	 *
 	 * @return bool
 	 */
 	public function decideChildrenFork(\Twig_Token $token)
@@ -108,7 +97,6 @@ class MatrixGroup_TokenParser extends \Twig_TokenParser
 
 	/**
 	 * @param \Twig_Token $token
-	 *
 	 * @return bool
 	 */
 	public function decideChildrenEnd(\Twig_Token $token)
@@ -118,7 +106,6 @@ class MatrixGroup_TokenParser extends \Twig_TokenParser
 
 	/**
 	 * @param \Twig_Token $token
-	 *
 	 * @return bool
 	 */
 	public function decideMatrixGroupEnd(\Twig_Token $token)
