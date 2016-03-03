@@ -42,9 +42,9 @@ class MatrixGroup_NodeItem extends \Twig_Node
 	{
 		$compiler
 			// Get this item's level
-			->write('$_thisItemLevel = (int)$this->getAttribute(')
+			->write('$_thisItemLevel = \Craft\craft()->matrixGroup->getBlockLevelById((int)$this->getAttribute(')
 			->subcompile($this->getNode('value_target'))
-			->raw(", 'level', array(), Twig_TemplateInterface::ANY_CALL, false, true);\n")
+			->raw(", 'id', array(), Twig_TemplateInterface::ANY_CALL, false, true))->level;\n")
 			// Was there a previous item?
 			->write("if (isset(\$_contextsByLevel)) {\n")
 			->indent()

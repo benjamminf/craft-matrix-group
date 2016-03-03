@@ -259,11 +259,16 @@ class MatrixGroupService extends BaseApplicationComponent
 		return MatrixGroup_BlockLevelModel::populateModels($result);
 	}
 
-	public function getBlockLevel(MatrixBlockModel $block)
+	public function getBlockLevelById($id)
 	{
-		$result = MatrixGroup_BlockLevelRecord::model()->findByAttributes(array('blockId' => $block->id));
+		$result = MatrixGroup_BlockLevelRecord::model()->findByAttributes(array('blockId' => $id));
 
 		return MatrixGroup_BlockLevelModel::populateModel($result);
+	}
+
+	public function getBlockLevel(MatrixBlockModel $block)
+	{
+		return $this->getBlockLevelById($block->id);
 	}
 
 	public function getTopLevelBlocks($blocks)
