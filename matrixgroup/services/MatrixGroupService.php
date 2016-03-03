@@ -129,7 +129,7 @@ class MatrixGroupService extends BaseApplicationComponent
 	/**
 	 * @return array
 	 */
-	public function getBlockTypes()
+	public function getAllBlockTypes()
 	{
 		$result = MatrixGroup_BlockTypeRecord::model()->findAll(null, array(
 			'id'         => null,
@@ -140,35 +140,26 @@ class MatrixGroupService extends BaseApplicationComponent
 		return MatrixGroup_BlockTypeModel::populateModels($result);
 	}
 
-	/**
-	 * @param MatrixGroup_BlockParentModel $model
-	 * @return bool
-	 * @throws Exception
-	 * @throws \Exception
-	 */
-	public function saveBlockParent(MatrixGroup_BlockParentModel $model)
+	public function saveBlockLevel(MatrixGroup_BlockLevelModel $model)
 	{
 		$record = null;
 
 		if(is_int($model->id))
 		{
-			$record = MatrixGroup_BlockParentRecord::model()->findById($model->id);
+			$record = MatrixGroup_BlockLevelRecord::model()->findById($model->id);
 
 			if(!$record)
 			{
-				throw new Exception(Craft::t('No matrix group block parent exists with the ID “{id}”.', array('id' => $model->id)));
+				throw new Exception(Craft::t('No matrix group block level exists with the ID “{id}”.', array('id' => $model->id)));
 			}
 		}
 		else
 		{
-			$record = MatrixGroup_BlockParentRecord::model()->findByAttributes(array(
-				'blockId'  => $model->blockId,
-				'parentId' => $model->parentId,
-			));
+			$record = MatrixGroup_BlockLevelRecord::model()->findByAttributes(array('blockId' => $model->blockId));
 
 			if(!$record)
 			{
-				$record = new MatrixGroup_BlockParentRecord();
+				$record = new MatrixGroup_BlockLevelRecord();
 			}
 		}
 
@@ -179,15 +170,8 @@ class MatrixGroupService extends BaseApplicationComponent
 			throw new Exception(Craft::t('No matrix block exists with the ID “{id}”.', array('id' => $model->blockId)));
 		}
 
-		$parent = craft()->matrix->getBlockById($model->parentId);
-
-		if(!$parent)
-		{
-			throw new Exception(Craft::t('No matrix block exists with the ID “{id}”.', array('id' => $model->parentId)));
-		}
-
-		$record->blockId  = $block->id;
-		$record->parentId = $parent->id;
+		$record->blockId = $block->id;
+		$record->level   = $model->level;
 
 		$record->validate();
 		$model->addErrors($record->getErrors());
@@ -223,12 +207,7 @@ class MatrixGroupService extends BaseApplicationComponent
 		return $success;
 	}
 
-	/**
-	 * @param MatrixGroup_BlockParentModel $model
-	 * @return bool
-	 * @throws \Exception
-	 */
-	public function deleteBlockParent(MatrixGroup_BlockParentModel $model)
+	public function deleteBlockLevel(MatrixGroup_BlockLevelModel $model)
 	{
 		$transaction = craft()->db->getCurrentTransaction() === null ? craft()->db->beginTransaction() : null;
 		try
@@ -239,25 +218,16 @@ class MatrixGroupService extends BaseApplicationComponent
 			{
 				$condition['id'] = $model->id;
 			}
-			else
+			else if(is_int($model->blockId))
 			{
-				if(is_int($model->blockId))
-				{
-					$condition['blockId']  = $model->blockId;
-				}
-
-				if(is_int($model->parentId))
-				{
-					$condition['parentId']  = $model->parentId;
-				}
+				$condition['blockId'] = $model->blockId;
 			}
-
-			if(empty($condition))
+			else
 			{
 				return false;
 			}
 
-			$tableName = (new MatrixGroup_BlockParentRecord())->getTableName();
+			$tableName = (new MatrixGroup_BlockLevelRecord())->getTableName();
 			$affectedRows = craft()->db->createCommand()->delete($tableName, $condition);
 
 			if($transaction !== null)
@@ -278,76 +248,92 @@ class MatrixGroupService extends BaseApplicationComponent
 		}
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getBlockParents()
+	public function getAllBlockLevels()
 	{
-		$result = MatrixGroup_BlockParentRecord::model()->findAll(null, array(
-			'id'       => null,
-			'blockId'  => null,
-			'parentId' => null,
+		$result = MatrixGroup_BlockLevelRecord::model()->findAll(null, array(
+			'id'      => null,
+			'blockId' => null,
+			'level'   => 0,
 		));
 
-		return MatrixGroup_BlockParentModel::populateModels($result);
+		return MatrixGroup_BlockLevelModel::populateModels($result);
 	}
 
-	/**
-	 * @param MatrixBlockModel $block
-	 * @return bool
-	 */
-	public function hasParent(MatrixBlockModel $block)
+	public function getBlockLevel(MatrixBlockModel $block)
 	{
-		$result = MatrixGroup_BlockParentRecord::model()->findByAttributes(array('blockId' => $block->id));
+		$result = MatrixGroup_BlockLevelRecord::model()->findByAttributes(array('blockId' => $block->id));
 
-		return (bool) $result;
+		return MatrixGroup_BlockLevelModel::populateModel($result);
 	}
 
-	/**
-	 * @param $blocks
-	 * @return array
-	 */
 	public function getTopLevelBlocks($blocks)
 	{
-		$topLevel = array();
+		$topBlocks = array();
 
-		foreach($blocks as $block)
+		foreach($blocks as $i => $block)
 		{
-			if(!craft()->matrixGroup->hasParent($block))
+			$blockLevel = $this->getBlockLevel($block);
+
+			if($blockLevel->level == 0)
 			{
-				$topLevel[] = $block;
+				$topBlocks[$i] = $block;
 			}
 		}
 
-		usort($topLevel, function(MatrixBlockModel $a, MatrixBlockModel $b)
-		{
-			return $a->sortOrder - $b->sortOrder;
-		});
-
-		return $topLevel;
+		return $topBlocks;
 	}
 
-	/**
-	 * @param MatrixBlockModel $block
-	 * @return array
-	 */
 	public function getBlockChildren(MatrixBlockModel $block)
 	{
-		$result = MatrixGroup_BlockParentRecord::model()->findAllByAttributes(array('parentId' => $block->id));
+		$owner = $block->getOwner();
+		$type = $block->getType();
+		$field = craft()->fields->getFieldById($type->fieldId);
 
-		$models = MatrixGroup_BlockParentModel::populateModels($result);
-		$blocks = array();
+		$blockLevel = $this->getBlockLevel($block);
+		$blocks = $this->_getBlocks($owner, $field);
 
-		foreach($models as $model)
+		$childLevel = ((int) $blockLevel->level) + 1;
+		$children = array();
+		$foundBlock = false;
+
+		foreach($blocks as $testBlock)
 		{
-			$blocks[] = craft()->matrix->getBlockById($model->blockId);
+			if($foundBlock)
+			{
+				$testBlockLevel = $this->getBlockLevel($testBlock);
+				if($testBlockLevel->level == $childLevel)
+				{
+					$children[] = $testBlock;
+				}
+				else
+				{
+					$foundBlock = false;
+				}
+			}
+
+			if($testBlock->id == $block->id)
+			{
+				$foundBlock = true;
+			}
 		}
 
-		usort($blocks, function(MatrixBlockModel $a, MatrixBlockModel $b)
+		return $children;
+	}
+
+	private function _getBlocks(BaseElementModel $owner, FieldModel $field)
+	{
+		$result = MatrixBlockRecord::model()->findAllByAttributes(array(
+			'ownerId' => $owner->id,
+			'fieldId' => $field->id,
+		));
+
+		$models = MatrixBlockModel::populateModels($result);
+
+		usort($models, function(MatrixBlockModel $a, MatrixBlockModel $b)
 		{
 			return $a->sortOrder - $b->sortOrder;
 		});
 
-		return $blocks;
+		return $models;
 	}
 }

@@ -26,7 +26,7 @@ Works the same way as the `nav` tag:
  You can also accomplish this in a non-recursive manner:
 ```twig
 <ul>
-	{% for block in craft.matrixGroup.from(entry.matrixField) %}
+	{% for block in craft.matrixGroup.topLevel(entry.matrixField) %}
 		<li>
 			{{ block.type.name }}
 			{% set children = craft.matrixGroup.children(block) %}

@@ -1,18 +1,24 @@
 <?php
 namespace Craft;
 
-class MatrixGroup_BlockParentRecord extends BaseRecord
+class MatrixGroup_BlockLevelRecord extends BaseRecord
 {
 	public function getTableName()
 	{
-		return 'matrixgroup_blockparents';
+		return 'matrixgroup_blocklevels';
 	}
 
 	public function defineRelations()
 	{
 		return array(
 			'block'  => array(static::BELONGS_TO, 'MatrixBlockRecord', 'required' => true, 'onDelete' => static::CASCADE),
-			'parent' => array(static::BELONGS_TO, 'MatrixBlockRecord', 'required' => true, 'onDelete' => static::CASCADE),
+		);
+	}
+
+	protected function defineAttributes()
+	{
+		return array(
+			'level' => array(AttributeType::Number, 'required' => true, 'default' => 0),
 		);
 	}
 }

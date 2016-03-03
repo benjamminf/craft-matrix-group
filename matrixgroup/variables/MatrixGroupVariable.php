@@ -4,7 +4,7 @@ namespace Craft;
 
 class MatrixGroupVariable
 {
-	public function from($blocks)
+	public function topLevel($blocks)
 	{
 		return craft()->matrixGroup->getTopLevelBlocks($blocks);
 	}

@@ -67,7 +67,7 @@ class MatrixGroupPlugin extends BasePlugin
 			craft()->templates->includeCssResource('matrixgroup/css/main.css');
 			craft()->templates->includeJsResource('matrixgroup/js/main.js');
 			craft()->templates->includeJs('MatrixGroup.groups=' . json_encode($this->_getGroupBlockTypes()));
-			craft()->templates->includeJs('MatrixGroup.parents=' . json_encode($this->_getGroupBlockParents()));
+			craft()->templates->includeJs('MatrixGroup.levels=' . json_encode($this->_getGroupBlockLevels()));
 			craft()->templates->includeJsResource('matrixgroup/js/settings.js');
 			craft()->templates->includeJsResource('matrixgroup/js/field.js');
 		}
@@ -75,12 +75,11 @@ class MatrixGroupPlugin extends BasePlugin
 
 	protected function bindEvents()
 	{
-		$blockIdMap = array();
-		$parentsToSave = array();
-		$parentsToDelete = array();
+		$levelsToSave = array();
+		$levelsToDelete = array();
 
 		// TODO Save matrix group markers here instead of controller
-		craft()->on('elements.saveElement', function(Event $e) use(&$blockIdMap, &$parentsToSave, &$parentsToDelete)
+		craft()->on('elements.saveElement', function(Event $e) use(&$levelsToSave, &$levelsToDelete)
 		{
 			$element = $e->params['element'];
 			$isNewElement = $e->params['isNewElement'];
@@ -92,17 +91,14 @@ class MatrixGroupPlugin extends BasePlugin
 					$block = $element;
 					$type = $block->getType();
 					$field = craft()->fields->getFieldById($type->fieldId);
+					$level = 0;
 
 					$postBlocks = craft()->request->getPost('fields.' . $field->handle);
-					$parentBlockId = null;
 
 					if($isNewElement)
 					{
 						$postBlockIds = array_keys($postBlocks);
 						$postBlockId = $postBlockIds[$block->sortOrder - 1];
-
-						// Save this in case it has any children that need it's ID
-						$blockIdMap[$postBlockId] = $block->id;
 					}
 					else
 					{
@@ -111,46 +107,36 @@ class MatrixGroupPlugin extends BasePlugin
 
 					$postBlock = $postBlocks[$postBlockId];
 
-					if(array_key_exists('parent', $postBlock))
+					if(array_key_exists('level', $postBlock))
 					{
-						$postBlockParentId = $postBlock['parent'];
-						$isParentNew = (strncmp($postBlockParentId, 'new', 3) === 0);
-
-						if($isParentNew)
-						{
-							$parentBlockId = $blockIdMap[$postBlockParentId];
-						}
-						else
-						{
-							$parentBlockId = $postBlockParentId;
-						}
+						$level = $postBlock['level'];
 					}
 
-					$blockParent = new MatrixGroup_BlockParentModel();
-					$blockParent->blockId = (int) $block->id;
+					$blockLevel = new MatrixGroup_BlockLevelModel();
+					$blockLevel->blockId = (int) $block->id;
+					$blockLevel->level = (int) $level;
 
-					if($parentBlockId)
+					if($blockLevel->level > 0)
 					{
-						$blockParent->parentId = (int) $parentBlockId;
-						array_push($parentsToSave, $blockParent);
+						$levelsToSave[] = $blockLevel;
 					}
 					else
 					{
-						array_push($parentsToDelete, $blockParent);
+						$levelsToDelete[] = $blockLevel;
 					}
 
 					break;
 				}
 				case ElementType::Entry:
 				{
-					foreach($parentsToSave as $blockParent)
+					foreach($levelsToSave as $blockLevel)
 					{
-						craft()->matrixGroup->saveBlockParent($blockParent);
+						craft()->matrixGroup->saveBlockLevel($blockLevel);
 					}
 
-					foreach($parentsToDelete as $blockParent)
+					foreach($levelsToDelete as $blockLevel)
 					{
-						craft()->matrixGroup->deleteBlockParent($blockParent);
+						craft()->matrixGroup->deleteBlockLevel($blockLevel);
 					}
 
 					break;
@@ -162,7 +148,7 @@ class MatrixGroupPlugin extends BasePlugin
 	private function _getGroupBlockTypes()
 	{
 		$return = array();
-		$groups = craft()->matrixGroup->getBlockTypes();
+		$groups = craft()->matrixGroup->getAllBlockTypes();
 
 		foreach($groups as $group)
 		{
@@ -173,14 +159,14 @@ class MatrixGroupPlugin extends BasePlugin
 		return $return;
 	}
 
-	private function _getGroupBlockParents()
+	private function _getGroupBlockLevels()
 	{
 		$return = array();
-		$parents = craft()->matrixGroup->getBlockParents();
+		$levels = craft()->matrixGroup->getAllBlockLevels();
 
-		foreach($parents as $parent)
+		foreach($levels as $blockLevel)
 		{
-			$return[$parent->blockId] = $parent->parentId;
+			$return[$blockLevel->blockId] = $blockLevel->level;
 		}
 
 		return $return;

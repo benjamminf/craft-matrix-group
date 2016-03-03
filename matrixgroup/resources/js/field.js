@@ -14,54 +14,83 @@
 			var that = this
 			var input = this.input
 			var $blocks = input.$blockContainer.children()
+			var parentMap = []
 
 			$blocks.each(function()
 			{
 				var $block = $(this)
 				var id = $block.data('id')
+				var level = (MatrixGroup.levels.hasOwnProperty(id) ? MatrixGroup.levels[id] : 0)|0;
 
-				if(MatrixGroup.parents.hasOwnProperty(id))
+				that.setupBlock($block, level)
+
+				if(level > 0)
 				{
-					var parentId = MatrixGroup.parents[id]
-					var $parent = $blocks.filter('[data-id="' + parentId + '"]')
+					var $parentBlock = that.findParentBlock($block, level)
 
-					if($parent.length > 0)
+					if($parentBlock)
 					{
-						that.setupBlock($parent)
-
-						var $parentInner = $parent.children('.matrixgroup-inner')
-						var $parentBlocksContainer = $parentInner.children('.matrixgroup-blocks')
-						var $parentBlocksAnchor = $parentBlocksContainer.children('.matrixgroup-anchor')
-
-						$block.insertBefore($parentBlocksAnchor)
+						parentMap.push({
+							block: $block,
+							parent: $parentBlock
+						})
 					}
 				}
-
-				that.setupBlock($block)
 			})
+
+			for(var i = 0; i < parentMap.length; i++)
+			{
+				var map = parentMap[i]
+				var $block = map.block
+				var $parentBlock = map.parent
+
+				var $groupInner = $parentBlock.children('.matrixgroup-inner')
+				var $blocksContainer = $groupInner.children('.matrixgroup-blocks')
+				var $blocksAnchor = $blocksContainer.children('.matrixgroup-anchor')
+
+				$block.insertBefore($blocksAnchor)
+			}
 		},
 
-		setupBlock: function($block)
+		/**
+		 * Preconditions:
+		 * - Assumes all sibling elements before block have had "setupBlock" invoked on them
+		 * - Assumes all matrix blocks are currently siblings, and haven't been nested yet
+		 *
+		 * @param $block
+		 * @param level
+		 * @returns {*}
+		 */
+		findParentBlock: function($block, level)
 		{
-			if($block.hasClass('matrixgroup'))
+			var $prevBlock = $block
+
+			while($prevBlock.length > 0)
 			{
-				return
+				$prevBlock = $prevBlock.prev()
+
+				var $prevLevelInput = $prevBlock.children('.matrixgroup-level')
+				var prevLevel = $prevLevelInput.val()|0
+
+				if(prevLevel < level)
+				{
+					return $prevBlock
+				}
 			}
+
+			return false
+		},
+
+		setupBlock: function($block, level)
+		{
+			level = level|0
 
 			var input = this.input
 			var id = $block.data('id')
 			var $type = $block.children('input[name$="[type]"]')
 			var typeHandle = $type.val()
-			var $blockNested = $block.parent('.matrixgroup-blocks')
-
-			if($blockNested.length > 0)
-			{
-				var $parentBlock = $blockNested.closest('.matrixblock')
-				var parentId = $parentBlock.data('id')
-				var parentInputName = input.inputNamePrefix + '[' + id + '][parent]'
-
-				$('<input type="hidden" name="' + parentInputName + '" value="' + parentId + '">').appendTo($block)
-			}
+			var levelInputName = input.inputNamePrefix + '[' + id + '][level]'
+			var $levelInput = $('<input type="hidden" name="' + levelInputName + '" value="' + level + '" class="matrixgroup-level">').appendTo($block)
 
 			if(MatrixGroup.groups.hasOwnProperty(typeHandle))
 			{
@@ -80,7 +109,7 @@
 				{
 					var type = $(e.target).data('type');
 
-					input.addBlock(type, $blocksAnchor)
+					input.addBlock(type, $blocksAnchor, level + 1)
 				})
 
 				new Garnish.MenuBtn($addBlock,
@@ -89,7 +118,7 @@
 					{
 						var type = $(option).data('type')
 
-						input.addBlock(type, $blocksAnchor)
+						input.addBlock(type, $blocksAnchor, level + 1)
 
 					}.bind(this)
 				})
@@ -100,6 +129,7 @@
 
 		addBlock: function(args, output)
 		{
+			var level = args[2]|0
 			var input = this.input
 			var id = 'new' + input.totalNewBlocks
 			var $block = input.$blockContainer.find('.matrixblock[data-id="' + id + '"]')
@@ -107,7 +137,7 @@
 
 			$block.velocity('stop')
 
-			this.setupBlock($block)
+			this.setupBlock($block, level)
 
 			$block.css({
 				'opacity': 0,
