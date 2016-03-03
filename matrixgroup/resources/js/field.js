@@ -20,8 +20,6 @@
 				var $block = $(this)
 				var id = $block.data('id')
 
-				that.setupBlock($block)
-
 				if(MatrixGroup.parents.hasOwnProperty(id))
 				{
 					var parentId = MatrixGroup.parents[id]
@@ -38,6 +36,8 @@
 						$block.insertBefore($parentBlocksAnchor)
 					}
 				}
+
+				that.setupBlock($block)
 			})
 		},
 
