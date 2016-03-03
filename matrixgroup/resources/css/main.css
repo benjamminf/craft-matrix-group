@@ -3,6 +3,10 @@
 	color: #0d78f2;
 }
 
+.matrixblock.matrixgroup {
+	overflow: hidden;
+}
+
 .matrixblock.matrixgroup > .matrixgroup-inner {
 	margin: 14px -14px 0 -14px;
 	padding: 14px 14px 0 14px;
