@@ -145,6 +145,13 @@ class MatrixGroupPlugin extends BasePlugin
 		});
 	}
 
+	public function addTwigExtension()
+	{
+		Craft::import('plugins.matrixgroup.twigextensions.MatrixGroupTwigExtension');
+
+		return new MatrixGroupTwigExtension();
+	}
+
 	private function _getGroupBlockTypes()
 	{
 		$return = array();
