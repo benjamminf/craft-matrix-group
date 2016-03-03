@@ -20,7 +20,7 @@ also now be able to nest blocks within it.
 ### Templates
 
 The plugin comes with it's own custom Twig tag, which works the same way as Craft's
-`[{% nav %}](https://craftcms.com/docs/templating/nav)` tag:
+[`{% nav %}`](https://craftcms.com/docs/templating/nav) tag:
 ```twig
 <ul>
 	{% matrixgroup block in entry.matrixField %}
@@ -56,7 +56,7 @@ The plugin comes with it's own custom Twig tag, which works the same way as Craf
 
 ### `{% matrixgroup %}`
 
-Refer to Craft's documentation of `[{% nav %}](https://craftcms.com/docs/templating/nav)`, as they are essentially
+Refer to Craft's documentation of [`{% nav %}`](https://craftcms.com/docs/templating/nav), as they are essentially
 identical in usage and function. Just replace `nav` with `matrixgroup` and you're good to go!
 
 ### `craft.matrixGroup.*`
