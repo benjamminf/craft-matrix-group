@@ -75,59 +75,84 @@ class MatrixGroupPlugin extends BasePlugin
 	protected function bindEvents()
 	{
 		$blockIdMap = array();
+		$parentsToSave = array();
+		$parentsToDelete = array();
 
 		// TODO Save matrix group markers here instead of controller
-		craft()->on('elements.saveElement', function(Event $e) use($blockIdMap)
+		craft()->on('elements.saveElement', function(Event $e) use(&$blockIdMap, &$parentsToSave, &$parentsToDelete)
 		{
 			$element = $e->params['element'];
 			$isNewElement = $e->params['isNewElement'];
 
-			if($element->elementType == ElementType::MatrixBlock)
+			switch($element->elementType)
 			{
-				$block = $element;
-				$type = $block->getType();
-				$field = craft()->fields->getFieldById($type->fieldId);
-
-				$postBlocks = craft()->request->getPost('fields.' . $field->handle);
-				$parentBlockId = null;
-
-				if($isNewElement)
+				case ElementType::MatrixBlock:
 				{
-					$postBlockIds = array_keys($postBlocks);
-					$postBlockId = $postBlockIds[$block->sortOrder - 1];
+					$block = $element;
+					$type = $block->getType();
+					$field = craft()->fields->getFieldById($type->fieldId);
 
-					// Save this in case it has any children that need it's ID
-					$blockIdMap[$postBlockId] = $block->id;
-				}
-				else
-				{
-					$postBlockId = $block->id;
-				}
+					$postBlocks = craft()->request->getPost('fields.' . $field->handle);
+					$parentBlockId = null;
 
-				$postBlock = $postBlocks[$postBlockId];
-
-				if(array_key_exists('parent', $postBlock))
-				{
-					$postBlockParentId = $postBlock['parent'];
-					$isParentNew = (strncmp($postBlockParentId, 'new', 3) === 0);
-
-					if($isParentNew)
+					if($isNewElement)
 					{
-						$parentBlockId = $blockIdMap[$postBlockParentId];
+						$postBlockIds = array_keys($postBlocks);
+						$postBlockId = $postBlockIds[$block->sortOrder - 1];
+
+						// Save this in case it has any children that need it's ID
+						$blockIdMap[$postBlockId] = $block->id;
 					}
 					else
 					{
-						$parentBlockId = $postBlockParentId;
+						$postBlockId = $block->id;
 					}
-				}
 
-				if($parentBlockId)
-				{
-					// TODO Save parent
+					$postBlock = $postBlocks[$postBlockId];
+
+					if(array_key_exists('parent', $postBlock))
+					{
+						$postBlockParentId = $postBlock['parent'];
+						$isParentNew = (strncmp($postBlockParentId, 'new', 3) === 0);
+
+						if($isParentNew)
+						{
+							$parentBlockId = $blockIdMap[$postBlockParentId];
+						}
+						else
+						{
+							$parentBlockId = $postBlockParentId;
+						}
+					}
+
+					$blockParent = new MatrixGroup_BlockParentModel();
+					$blockParent->blockId = (int) $block->id;
+
+					if($parentBlockId)
+					{
+						$blockParent->parentId = (int) $parentBlockId;
+						array_push($parentsToSave, $blockParent);
+					}
+					else
+					{
+						array_push($parentsToDelete, $blockParent);
+					}
+
+					break;
 				}
-				else
+				case ElementType::Entry:
 				{
-					// TODO Delete parent
+					foreach($parentsToSave as $blockParent)
+					{
+						craft()->matrixGroup->saveBlockParent($blockParent);
+					}
+
+					foreach($parentsToDelete as $blockParent)
+					{
+						craft()->matrixGroup->deleteBlockParent($blockParent);
+					}
+
+					break;
 				}
 			}
 		});
