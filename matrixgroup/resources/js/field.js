@@ -18,13 +18,36 @@
 			$blocks.each(function()
 			{
 				var $block = $(this)
+				var id = $block.data('id')
 
 				that.setupBlock($block)
+
+				if(MatrixGroup.parents.hasOwnProperty(id))
+				{
+					var parentId = MatrixGroup.parents[id]
+					var $parent = $blocks.filter('[data-id="' + parentId + '"]')
+
+					if($parent.length > 0)
+					{
+						that.setupBlock($parent)
+
+						var $parentInner = $parent.children('.matrixgroup-inner')
+						var $parentBlocksContainer = $parentInner.children('.matrixgroup-blocks')
+						var $parentBlocksAnchor = $parentBlocksContainer.children('.matrixgroup-anchor')
+
+						$block.insertBefore($parentBlocksAnchor)
+					}
+				}
 			})
 		},
 
 		setupBlock: function($block)
 		{
+			if($block.hasClass('matrixgroup'))
+			{
+				return
+			}
+
 			var input = this.input
 			var id = $block.data('id')
 			var $type = $block.children('input[name$="[type]"]')
@@ -44,7 +67,7 @@
 			{
 				var $blockGroup = $('<div class="matrixgroup-inner">').appendTo($block)
 				var $blocksContainer = $('<div class="matrixgroup-blocks">').appendTo($blockGroup)
-				var $blocksAnchor = $('<div>').appendTo($blocksContainer)
+				var $blocksAnchor = $('<div class="matrixgroup-anchor">').appendTo($blocksContainer)
 				var $buttonsContainer = input.$addBlockBtnContainer.clone().appendTo($blockGroup)
 				var $buttonsGroup = $buttonsContainer.children('.btngroup')
 				var $buttons = $buttonsGroup.children('.btn')
