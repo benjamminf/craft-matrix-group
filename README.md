@@ -7,6 +7,7 @@ work on existing matrix fields, and won't break or destroy your content in the e
 
 ### Templates
 
+Works the same way as the `nav` tag:
 ```twig
 <ul>
 	{% matrixgroup block in entry.matrixField %}
@@ -22,8 +23,7 @@ work on existing matrix fields, and won't break or destroy your content in the e
 </ul>
 ```
 
-Works the same way as the `nav` tag. You can also accomplish this in a non-recursive manner:
-
+ You can also accomplish this in a non-recursive manner:
 ```twig
 <ul>
 	{% for block in craft.matrixGroup.from(entry.matrixField) %}
