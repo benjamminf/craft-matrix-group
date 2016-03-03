@@ -8,7 +8,7 @@ class MatrixGroup_BlockParentModel extends BaseModel
 		return array(
 			'id'       => AttributeType::Number,
 			'blockId'  => AttributeType::Number,
-			'parentId' => AttributeType::Handle,
+			'parentId' => AttributeType::Number,
 		);
 	}
 }
