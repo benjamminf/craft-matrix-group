@@ -291,4 +291,63 @@ class MatrixGroupService extends BaseApplicationComponent
 
 		return MatrixGroup_BlockParentModel::populateModels($result);
 	}
+
+	/**
+	 * @param MatrixBlockModel $block
+	 * @return bool
+	 */
+	public function hasParent(MatrixBlockModel $block)
+	{
+		$result = MatrixGroup_BlockParentRecord::model()->findByAttributes(array('blockId' => $block->id));
+
+		return (bool) $result;
+	}
+
+	/**
+	 * @param $blocks
+	 * @return array
+	 */
+	public function getTopLevelBlocks($blocks)
+	{
+		$topLevel = array();
+
+		foreach($blocks as $block)
+		{
+			if(!craft()->matrixGroup->hasParent($block))
+			{
+				$topLevel[] = $block;
+			}
+		}
+
+		usort($topLevel, function(MatrixBlockModel $a, MatrixBlockModel $b)
+		{
+			return $a->sortOrder - $b->sortOrder;
+		});
+
+		return $topLevel;
+	}
+
+	/**
+	 * @param MatrixBlockModel $block
+	 * @return array
+	 */
+	public function getBlockChildren(MatrixBlockModel $block)
+	{
+		$result = MatrixGroup_BlockParentRecord::model()->findAllByAttributes(array('parentId' => $block->id));
+
+		$models = MatrixGroup_BlockParentModel::populateModels($result);
+		$blocks = array();
+
+		foreach($models as $model)
+		{
+			$blocks[] = craft()->matrix->getBlockById($model->blockId);
+		}
+
+		usort($blocks, function(MatrixBlockModel $a, MatrixBlockModel $b)
+		{
+			return $a->sortOrder - $b->sortOrder;
+		});
+
+		return $blocks;
+	}
 }
