@@ -176,7 +176,6 @@ class MatrixGroupService extends BaseApplicationComponent
 
 		if(!$block)
 		{
-			return false;
 			throw new Exception(Craft::t('No matrix block exists with the ID “{id}”.', array('id' => $model->blockId)));
 		}
 
@@ -184,7 +183,6 @@ class MatrixGroupService extends BaseApplicationComponent
 
 		if(!$parent)
 		{
-			return false;
 			throw new Exception(Craft::t('No matrix block exists with the ID “{id}”.', array('id' => $model->parentId)));
 		}
 
