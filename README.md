@@ -32,7 +32,7 @@ The plugin comes with it's own custom Twig tag, which works the same way as Craf
 				</ul>
 			{% endifchildren %}
 		</li>
-	{% endfor %}
+	{% endmatrixgroup %}
 </ul>
 ```
 
