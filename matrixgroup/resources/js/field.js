@@ -101,6 +101,19 @@
 				var $buttonsGroup = $buttonsContainer.children('.btngroup')
 				var $buttons = $buttonsGroup.children('.btn')
 				var $addBlock = $buttonsContainer.children('.menubtn')
+				var $addBlockMenu = $('<div class="menu">').insertAfter($addBlock)
+				var $addBlockMenuUl = $('<ul>').appendTo($addBlockMenu)
+
+				$buttons.each(function()
+				{
+					var $button = $(this)
+
+					var name = $button.text()
+					var handle = $button.data('type')
+
+					var $li = $('<li>').appendTo($addBlockMenuUl)
+					var $a = $('<a data-type="' + handle + '">').text(name).appendTo($li)
+				})
 
 				$buttonsContainer.removeClass('buttons last')
 				$buttonsContainer.addClass('matrixgroup-buttons')
@@ -112,8 +125,8 @@
 					input.addBlock(type, $blocksAnchor, level + 1)
 				})
 
-				new Garnish.MenuBtn($addBlock,
-				{
+				new Garnish.MenuBtn($addBlock, {
+
 					onOptionSelect: function(option)
 					{
 						var type = $(option).data('type')
@@ -122,6 +135,57 @@
 
 					}.bind(this)
 				})
+
+				var buttonsGroupWidth = null
+				var buttonsContainerWidth = null
+				var showingAddBlockMenu = false
+
+				function setNewBlockBtn()
+				{
+					if(!buttonsGroupWidth)
+					{
+						buttonsGroupWidth = $buttonsGroup.width()
+						if(!buttonsGroupWidth) return
+					}
+
+					if(buttonsGroupWidth !== (buttonsContainerWidth = $buttonsContainer.width()))
+					{
+						if(buttonsGroupWidth > buttonsContainerWidth)
+						{
+							if(!showingAddBlockMenu)
+							{
+								$buttonsGroup.addClass('hidden')
+								$addBlock.removeClass('hidden')
+								showingAddBlockMenu = true
+							}
+						}
+						else
+						{
+							if(showingAddBlockMenu)
+							{
+								$addBlock.addClass('hidden')
+								$buttonsGroup.removeClass('hidden')
+								showingAddBlockMenu = false
+
+								if(navigator.userAgent.indexOf('Safari') !== -1)
+								{
+									Garnish.requestAnimationFrame(function()
+									{
+										$buttonsGroup.css('opacity', 0.99)
+
+										Garnish.requestAnimationFrame(function()
+										{
+											$buttonsGroup.css('opacity', '')
+										});
+									});
+								}
+							}
+						}
+					}
+				}
+
+				this.addListener($buttonsContainer, 'resize', setNewBlockBtn)
+				Garnish.$doc.ready(setNewBlockBtn)
 
 				$block.addClass('matrixgroup')
 			}
