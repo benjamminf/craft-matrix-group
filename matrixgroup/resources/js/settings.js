@@ -67,9 +67,10 @@
 		setBlockTypeGroup: function(blockType, isGroup)
 		{
 			var configurator = this.configurator
-			var modal = configurator.getBlockTypeSettingsModal()
 
-			isGroup = typeof isGroup === 'boolean' ? isGroup : modal.$groupInput.is(':checked')
+			isGroup = typeof isGroup === 'boolean' ?
+				isGroup :
+				configurator.getBlockTypeSettingsModal().$groupInput.is(':checked')
 
 			if(isGroup)
 			{
