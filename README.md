@@ -9,6 +9,14 @@ That said, this plugin comes with a warning. It is built on undocumented API's a
 to function. That means there is always the risk it could break on future Craft CMS updates. Use at your own risk.
 
 
+## Demo
+
+### Grid Layout
+
+A common use case is to use group blocks to generate a grid layout of content.
+![Matrix Group columns demo](demos/columns.gif)
+
+
 ## Usage
 
 ### Fields
