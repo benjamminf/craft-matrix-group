@@ -92,7 +92,9 @@ class MatrixGroupPlugin extends BasePlugin
 				$field = craft()->fields->getFieldById($type->fieldId);
 				$level = 0;
 
-				$postBlocks = craft()->request->getPost('fields.' . $field->handle);
+				$postNamespace = craft()->request->getPost('namespace');
+				$postNamespace = $postNamespace . ($postNamespace ? '.' : '');
+				$postBlocks = craft()->request->getPost($postNamespace . 'fields.' . $field->handle);
 
 				if($isNewElement)
 				{
