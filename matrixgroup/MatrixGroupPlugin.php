@@ -11,7 +11,7 @@ class MatrixGroupPlugin extends BasePlugin
 
 	public function getDescription()
 	{
-		return 'Allow your matrix blocks to group other blocks within';
+		return 'Give structure to your Matrix fields';
 	}
 
 	public function getVersion()
