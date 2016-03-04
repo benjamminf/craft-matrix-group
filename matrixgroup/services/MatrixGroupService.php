@@ -19,7 +19,7 @@ class MatrixGroupService extends BaseApplicationComponent
 
 			if(!$record)
 			{
-				throw new Exception(Craft::t('No matrix group block type exists with the ID “{id}”.', array('id' => $model->id)));
+				throw new Exception(Craft::t('No matrix group block type exists with the ID \'{id}\'.', array('id' => $model->id)));
 			}
 		}
 		else
@@ -36,11 +36,11 @@ class MatrixGroupService extends BaseApplicationComponent
 
 		if(!$blockType)
 		{
-			throw new Exception(Craft::t('No matrix block type exists with the ID “{id}”.', array('id' => $model->typeId)));
+			throw new Exception(Craft::t('No matrix block type exists with the ID \'{id}\'.', array('id' => $model->typeId)));
 		}
 
 		$record->typeId = $blockType->id;
-		$record->typeHandle = $blockType->handle;
+		$record->typeHandle = $model->typeHandle ?: $blockType->handle;
 
 		$record->validate();
 		$model->addErrors($record->getErrors());
@@ -150,7 +150,7 @@ class MatrixGroupService extends BaseApplicationComponent
 
 			if(!$record)
 			{
-				throw new Exception(Craft::t('No matrix group block level exists with the ID “{id}”.', array('id' => $model->id)));
+				throw new Exception(Craft::t('No matrix group block level exists with the ID \'{id}\'.', array('id' => $model->id)));
 			}
 		}
 		else
@@ -167,7 +167,7 @@ class MatrixGroupService extends BaseApplicationComponent
 
 		if(!$block)
 		{
-			throw new Exception(Craft::t('No matrix block exists with the ID “{id}”.', array('id' => $model->blockId)));
+			throw new Exception(Craft::t('No matrix block exists with the ID \'{id}\'.', array('id' => $model->blockId)));
 		}
 
 		$record->blockId = $block->id;
