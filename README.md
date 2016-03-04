@@ -74,6 +74,7 @@ identical in usage and function. Just replace `nav` with `matrixgroup` and you'r
 |--------------------|----------------------------------------------------------------------------------------------------------------------------|
 | `topLevel(blocks)` | Takes in an array of `MatrixBlockModel`'s and filters it to only the top-level ones.                                       |
 | `children(block)`  | Takes in a `MatrixBlockModel` instance and returns an array of `MatrixBlockModel`'s that are children of the passed block. |
+| `level(block)`     | Takes in a `MatrixBlockModel` instance and returns the depth of the block, with `0` being the top level.                   |
 
 
 ## Roadmap

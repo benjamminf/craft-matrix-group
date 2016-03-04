@@ -13,4 +13,9 @@ class MatrixGroupVariable
 	{
 		return craft()->matrixGroup->getBlockChildren($block);
 	}
+
+	public function level(MatrixBlockModel $block)
+	{
+		return craft()->matrixGroup->getBlockLevel($block);
+	}
 }
