@@ -16,6 +16,6 @@ class MatrixGroupVariable
 
 	public function level(MatrixBlockModel $block)
 	{
-		return craft()->matrixGroup->getBlockLevel($block);
+		return craft()->matrixGroup->getBlockLevel($block)->level;
 	}
 }
