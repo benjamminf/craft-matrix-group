@@ -13,8 +13,9 @@ to function. That means there is always the risk it could break on future Craft 
 
 ### Grid Layout
 
-A common use case is to use group blocks to generate a grid layout of content.
 ![Matrix Group columns demo](demos/columns.gif)
+
+A common use case is to use group blocks to generate a grid layout of content.
 
 
 ## Usage
