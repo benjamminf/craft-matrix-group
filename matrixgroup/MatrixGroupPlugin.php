@@ -84,63 +84,75 @@ class MatrixGroupPlugin extends BasePlugin
 			$element = $e->params['element'];
 			$isNewElement = $e->params['isNewElement'];
 
-			switch($element->elementType)
+			if($element->elementType === ElementType::MatrixBlock)
 			{
-				case ElementType::MatrixBlock:
+				$block = $element;
+				$owner = $block->getOwner();
+				$type = $block->getType();
+				$field = craft()->fields->getFieldById($type->fieldId);
+				$level = 0;
+
+				$postBlocks = craft()->request->getPost('fields.' . $field->handle);
+
+				if($isNewElement)
 				{
-					$block = $element;
-					$type = $block->getType();
-					$field = craft()->fields->getFieldById($type->fieldId);
-					$level = 0;
-
-					$postBlocks = craft()->request->getPost('fields.' . $field->handle);
-
-					if($isNewElement)
-					{
-						$postBlockIds = array_keys($postBlocks);
-						$postBlockId = $postBlockIds[$block->sortOrder - 1];
-					}
-					else
-					{
-						$postBlockId = $block->id;
-					}
-
-					$postBlock = $postBlocks[$postBlockId];
-
-					if(array_key_exists('level', $postBlock))
-					{
-						$level = $postBlock['level'];
-					}
-
-					$blockLevel = new MatrixGroup_BlockLevelModel();
-					$blockLevel->blockId = (int) $block->id;
-					$blockLevel->level = (int) $level;
-
-					if($blockLevel->level > 0)
-					{
-						$levelsToSave[] = $blockLevel;
-					}
-					else
-					{
-						$levelsToDelete[] = $blockLevel;
-					}
-
-					break;
+					$postBlockIds = array_keys($postBlocks);
+					$postBlockId = $postBlockIds[$block->sortOrder - 1];
 				}
-				case ElementType::Entry:
+				else
 				{
-					foreach($levelsToSave as $blockLevel)
-					{
-						craft()->matrixGroup->saveBlockLevel($blockLevel);
-					}
-
-					foreach($levelsToDelete as $blockLevel)
-					{
-						craft()->matrixGroup->deleteBlockLevel($blockLevel);
-					}
-
-					break;
+					$postBlockId = $block->id;
 				}
+
+				$postBlock = $postBlocks[$postBlockId];
+
+				if(array_key_exists('level', $postBlock))
+				{
+					$level = $postBlock['level'];
+				}
+
+				$blockLevel = new MatrixGroup_BlockLevelModel();
+				$blockLevel->blockId = (int) $block->id;
+				$blockLevel->level = (int) $level;
+
+				if($blockLevel->level > 0)
+				{
+					if(!array_key_exists($owner->id, $levelsToSave))
+					{
+						$levelsToSave[$owner->id] = array();
+					}
+
+					$levelsToSave[$owner->id][] = $blockLevel;
+				}
+				else
+				{
+					if(!array_key_exists($owner->id, $levelsToDelete))
+					{
+						$levelsToDelete[$owner->id] = array();
+					}
+
+					$levelsToDelete[$owner->id][] = $blockLevel;
+				}
+			}
+
+			if(array_key_exists($element->id, $levelsToSave))
+			{
+				foreach($levelsToSave[$element->id] as $blockLevel)
+				{
+					craft()->matrixGroup->saveBlockLevel($blockLevel);
+				}
+
+				unset($levelsToSave[$element->id]);
+			}
+
+			if(array_key_exists($element->id, $levelsToDelete))
+			{
+				foreach($levelsToDelete[$element->id] as $blockLevel)
+				{
+					craft()->matrixGroup->deleteBlockLevel($blockLevel);
+				}
+
+				unset($levelsToDelete[$element->id]);
 			}
 		});
 	}
