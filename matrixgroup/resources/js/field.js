@@ -7,6 +7,8 @@
 			this.input = input
 
 			MatrixGroup.patchMethod(input, this, 'addBlock')
+			MatrixGroup.patchMethod(input, this, 'updateAddBlockBtn')
+			MatrixGroup.patchMethod(input, this, 'canAddMoreBlocks')
 		},
 
 		postInit: function(args)
@@ -184,6 +186,8 @@
 					}
 				}
 
+				input.updateAddBlockBtn();
+
 				this.addListener($buttonsContainer, 'resize', setNewBlockBtn)
 				Garnish.$doc.ready(setNewBlockBtn)
 
@@ -214,6 +218,31 @@
 			}, animateInfo.opts.duration, animateInfo.opts.complete)
 
 			return output
+		},
+
+		updateAddBlockBtn: function(args, output)
+		{
+			var input = this.input
+
+			if(input.canAddMoreBlocks())
+			{
+				input.$blockContainer.find('.matrixgroup-buttons > .btngroup').removeClass('disabled')
+				input.$blockContainer.find('.matrixgroup-buttons > .menubtn').removeClass('disabled')
+			}
+			else
+			{
+				input.$blockContainer.find('.matrixgroup-buttons > .btngroup').addClass('disabled')
+				input.$blockContainer.find('.matrixgroup-buttons > .menubtn').addClass('disabled')
+			}
+
+			return output
+		},
+
+		canAddMoreBlocks: function(args, output)
+		{
+			var input = this.input
+
+			return (!input.maxBlocks || input.$blockContainer.find('.matrixblock').length < input.maxBlocks)
 		}
 	})
 
