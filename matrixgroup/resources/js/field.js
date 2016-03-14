@@ -251,5 +251,31 @@
 		MatrixGroup.Field = Field
 		MatrixGroup.patchClass(Craft.MatrixInput, Field, true, 'postInit')
 	})
+	
+	// Partial support for the PimpMyMatrix plugin. Initialises Matrix block tabs, but not the buttons.
+	MatrixGroup.onPropertySet(window, 'PimpMyMatrix', function()
+	{
+		MatrixGroup.onPropertySet(PimpMyMatrix, 'FieldManipulator', function()
+		{
+			var fn = PimpMyMatrix.FieldManipulator.prototype
+			var superMethod = fn.processMatrixFields
+
+			fn.processMatrixFields = function()
+			{
+				var that = this
+				superMethod.apply(this, arguments)
+
+				this.$matrixContainer.each(function()
+				{
+					var $matrixField = $(this)
+
+					$matrixField.find('.matrixgroup-blocks > .matrixblock').each(function()
+					{
+						that.initBlocks($(this), $matrixField);
+					})
+				})
+			}
+		})
+	})
 
 })(jQuery)
