@@ -1,6 +1,6 @@
 ### Important: [Neo might be a better solution for you &rarr;](https://github.com/benjamminf/craft-neo)
 
---
+---
 
 # Matrix groups for Craft ![Craft 2.5](https://img.shields.io/badge/craft-2.5-red.svg?style=flat-square)
 
