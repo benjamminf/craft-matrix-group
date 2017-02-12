@@ -1,8 +1,10 @@
-### Important: [Neo might be a better solution for you &rarr;](https://github.com/benjamminf/craft-neo)
+# This plugin is deprecated
+
+### Do not use this plugin going forward as it will not be supported. If you need this kind of functionality, [Neo is a better solution.](https://github.com/benjamminf/craft-neo)
 
 ---
 
-# Matrix groups for Craft ![Craft 2.5](https://img.shields.io/badge/craft-2.5-red.svg?style=flat-square)
+## Matrix groups for Craft ![Craft 2.5](https://img.shields.io/badge/craft-2.5-red.svg?style=flat-square)
 
 This Craft CMS plugin will let you recursively nest blocks in your matrix fields.
 
